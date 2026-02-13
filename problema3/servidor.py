@@ -8,6 +8,8 @@ import socket
 import threading
 
 # TODO: Definir la dirección y puerto del servidor
+HOST = "localhost"
+PORT = 9002
 
 # Lista para mantener todos los sockets de clientes conectados
 clients = []
@@ -23,19 +25,18 @@ def handle_client(client_socket, client_name):
     while True:
         try:
             # TODO: Recibir datos del cliente (hasta 1024 bytes)
-            
+            data = client_socket.recv(1024)
             # Si no se reciben datos, el cliente se desconectó
             if not data:
                 break
                 
             # Formatear el mensaje con el nombre del cliente
             message = f"{client_name}: {data.decode()}"
-            
             # Imprimir el mensaje en el servidor
             print(message)
             
             # TODO: Retransmitir el mensaje a todos los clientes excepto al remitente
-
+            broadcast(message, client_socket)
             
         except ConnectionResetError:
             # Manejar desconexión inesperada del cliente
@@ -54,15 +55,18 @@ def broadcast(message, sender_socket):
     for client in clients:
         if client != sender_socket:
             # TODO: Enviar el mensaje codificado a bytes a cada cliente
+            client.sendall(message.encode())
 
 
 # TODO: Crear un socket TCP/IP
 # AF_INET: socket de familia IPv4
 # SOCK_STREAM: socket de tipo TCP (orientado a conexión)
+servidor = socket.socket (socket.AF_INET, socket.SOCK_STREAM)
 
 # TODO: Enlazar el socket a la dirección y puerto especificados
-
+servidor.bind((HOST, PORT))
 # TODO: Poner el socket en modo escucha
+servidor.listen()
 # El parámetro define el número máximo de conexiones en cola
 
 print("Servidor a la espera de conexiones ...")
@@ -72,22 +76,20 @@ while True:
     # TODO: Aceptar una conexión entrante
     # client: nuevo socket para comunicarse con el cliente
     # addr: dirección y puerto del cliente
-    
-    print(f"Conexión realizada por {addr}")
-    
+    client, addr = servidor.accept()
+    print(f"Conexión realizada por {addr}")    
     # TODO: Recibir el nombre del cliente (hasta 1024 bytes) y decodificarlo
-    
+    client_name = client.recv(1024).decode()
     # TODO: Agregar el socket del cliente a la lista de clientes conectados
-    
+    clients.append(client)
     # Enviar mensaje de confirmación de conexión al cliente
     client.send("ya estás conectado!".encode())
-    
     # Notificar a todos los clientes que un nuevo usuario se unió al chat
     broadcast(f"{client_name} se ha unido al Chat.", client)
     
     # TODO: Crear e iniciar un hilo para manejar la comunicación con este cliente
     # target: función que se ejecutará en el hilo
     # args: argumentos que se pasarán a la función
-    client_handler = # ...
+    client_handler = threading.Thread(target=handle_client, args=(client, client_name))
     client_handler.start()
 
