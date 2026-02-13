@@ -25,12 +25,12 @@ print("Servidor a la espera de conexiones ...")
 
 # El parámetro define el número máximo de conexiones en cola
 # TODO: Aceptar una conexión entrante
-conn, direccion = servidor.accept()
+conn, addr = servidor.accept()
 # accept() bloquea hasta que llega una conexión
 # conn: nuevo socket para comunicarse con el cliente
 # addr: dirección y puerto del cliente
 
-print(f"Conexión realizada por {HOST}")
+print(f"Conexión realizada por {addr}")
 
 # TODO: Recibir datos del cliente (hasta 1024 bytes)
 datos = conn.recv(1024)
