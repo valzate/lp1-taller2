@@ -33,7 +33,7 @@ while True:
     # addr: dirección y puerto del cliente
     conn, addr = servidor.accept()
     
-    print(f"Conexión realizada ")
+    print(f"Conexión realizada por {addr}")
 
     # TODO: Recibir datos del cliente (hasta 1024 bytes)
     data = conn.recv(1024)
