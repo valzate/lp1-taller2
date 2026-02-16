@@ -126,6 +126,7 @@ def main():
     while True:
         conn, addr = server.accept()
         threading.Thread(target=handle_client, args=(conn, addr)).start()    
-            
+        broadcast_room(f"Nuevo usuario conectado: {addr}", "general")
+             
 if __name__ == "__main__":
     main()   
