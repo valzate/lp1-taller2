@@ -17,10 +17,11 @@ print(f"Conexión realizada por {addr}")
 
 data = cliente.recv(4026).decode()
 # El comando se divide en partes: comando, nombre del archivo, tamaño y checksum
-
-filename = data.split()[0] # El nombre del archivo es la primera parte del comando
-size = int(data.split()[1]) # El tamaño del archivo es la segunda parte del comando
-checksum = data.split()[2] # El checksum es la tercera parte del comando
+comando = data.split()
+print(f"Comando recibido: {comando}")
+filename = comando[1] # El nombre del archivo es la primera parte del comando
+size = int(comando[2]) # El tamaño del archivo es la segunda parte del comando
+checksum = comando[3] # El checksum es la tercera parte del comando
 
 # Recibir el archivo en partes
 with open(filename, "wb") as f:
