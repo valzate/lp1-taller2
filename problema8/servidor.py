@@ -9,7 +9,6 @@ lock = threading.Lock()
 
 waiting_players = []
 spectators = []
-game = None
 
 
 class Game:
@@ -22,7 +21,7 @@ class Game:
     def board_string(self):
         rows = [" | ".join(row) for row in self.board]
         return "\n---------\n".join(rows)
-
+    print("Servidor Tic-Tac-Toe dibujando el tablero...")
     def validate_move(self, row, col):
         return 0 <= row < 3 and 0 <= col < 3 and self.board[row][col] == " "
 
@@ -53,14 +52,16 @@ class Game:
     def is_draw(self):
         return all(cell != " " for row in self.board for cell in row)
 
+game = Game('x', 'O')  # Juego global para manejar el estado
 
+print("Servidor Tic-Tac-Toe listo para aceptar conexiones...")
 def broadcast(message):
     for player in game.players.values():
         player.send(message.encode())
     for spec in spectators:
         spec.send(message.encode())
 
-
+print("Servidor Tic-Tac-Toe manejando cliente...")
 def handle_client(conn):
     global game
 
@@ -91,18 +92,20 @@ def handle_client(conn):
     else:
         conn.close()
         return
+   
 
     while not game.finished:
         try:
             conn.send(f"Turno de {game.current_turn}\n".encode())
             move = conn.recv(BUFFER).decode().strip()
+            print(move)
 
             if conn != game.players[game.current_turn]:
                 conn.send(b"No es tu turno\n")
                 continue
 
             row, col = map(int, move.split())
-
+            print(f"Servidor Tic-Tac-Toe movimiento recibido: {row}, {col}")
             with lock:
                 if not game.make_move(row, col):
                     conn.send(b"Movimiento invalido\n")
@@ -112,7 +115,7 @@ def handle_client(conn):
                 draw = game.is_draw()
 
                 broadcast(game.board_string() + "\n")
-
+                print("Servidor Tic-Tac-Toe tablero actualizado y turno cambiado.")
                 if winner:
                     broadcast(f"Gana {winner}!\n")
                     game.finished = True
@@ -121,7 +124,7 @@ def handle_client(conn):
                     game.finished = True
                 else:
                     game.current_turn = "O" if game.current_turn == "X" else "X"
-
+                
         except:
             break
 
