@@ -14,3 +14,10 @@
 - Distribución de clientes
 - Sincronización de datos
 
+**EJECUCION DEL PROGRAMA**
+Hay un solo programa el cual se ejcuta en 4 terminales de la siguiente manera:
+ - python3 ptp.py 5001 
+ - python3 ptp.py 5002 
+ - python3 ptp.py 5003 
+ - python3 ptp.py 5004
+ Se comunican como servidores distintos conectados entre sí 
